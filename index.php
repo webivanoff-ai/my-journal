@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Журнал 📖</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<button class="about-btn" id="aboutBtn" title="О проекте">?</button>    
+<div class="container">
+    <!-- Индикатор активного фильтра избранного -->
+<div class="favorites-active-indicator" id="favoritesIndicator">
+    <span class="indicator-icon">⭐</span>
+    <span>Показаны избранные</span>
+    <span class="indicator-close" id="favoritesIndicatorClose">×</span>
+</div>
+    <aside class="sidebar">
+        <div class="calendar">
+            <div class="calendar-header">
+                <button class="calendar-nav" id="prevMonth">‹</button>
+                <h3 id="calendarTitle">Июнь 2026</h3>
+                <button class="calendar-nav" id="nextMonth">›</button>
+            </div>
+            <div class="calendar-weekdays">
+                <div class="weekday">Пн</div>
+                <div class="weekday">Вт</div>
+                <div class="weekday">Ср</div>
+                <div class="weekday">Чт</div>
+                <div class="weekday">Пт</div>
+                <div class="weekday">Сб</div>
+                <div class="weekday">Вс</div>
+            </div>
+            <div class="calendar-days" id="calendarDays"></div>
+            <div class="filter-hint" id="filterHint">
+                <div id="filterText"></div>
+                <button onclick="clearDateFilter()">Сбросить фильтр</button>
+            </div>
+        </div>
+        
+        <!-- Кнопка статистики -->
+        <button class="stats-btn" id="statsBtn">
+            📊 Статистика
+        </button>
+    </aside>
+    
+    <main class="main-content">
+        <div class="top-bar">
+    
+<!-- Меню функций -->
+<div class="menu-switcher-top">
+    <button class="menu-icon-btn" id="menuIconBtn" title="Меню">
+        ☰
+    </button>
+    <div class="menu-dropdown" id="menuDropdown">
+        <button class="menu-dropdown-item" id="favoritesFilter">
+            <span class="menu-icon">⭐</span>
+            <span class="menu-text">Избранное</span>
+            <span class="menu-count" id="favoritesCount">0</span>
+        </button>
+        <button class="menu-dropdown-item" id="galleryBtn">
+            <span class="menu-icon">📷</span>
+            <span class="menu-text">Галерея</span>
+            <span class="menu-count" id="galleryCount">0</span>
+        </button>
+    </div>
+</div>
+  
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Поиск по записям..." />
+                <span class="search-icon">🔍</span>
+            </div>
+<div class="top-actions">
+    <!-- Новый переключатель тем -->
+    <div class="theme-switcher-top">
+        <button class="theme-icon-btn" id="themeIconBtn" title="Сменить тему">
+            🎨
+        </button>
+        <div class="theme-dropdown" id="themeDropdown">
+            <div class="theme-dropdown-item active" data-theme="light">
+                <div class="theme-preview"></div>
+                <span>📓 Тетрадь</span>
+            </div>
+            <div class="theme-dropdown-item" data-theme="parchment">
+                <div class="theme-preview"></div>
+                <span>📜 Пергамент</span>
+            </div>
+            <div class="theme-dropdown-item" data-theme="minimal">
+                <div class="theme-preview"></div>
+                <span>⚪ Минимализм</span>
+            </div>
+            <div class="theme-dropdown-item" data-theme="dark">
+                <div class="theme-preview"></div>
+                <span>🌙 Тёмная</span>
+            </div>
+            <div class="theme-dropdown-item" data-theme="warm-evening">
+                <div class="theme-preview"></div>
+                <span>🔥 Тёплый вечер</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Кнопка входа -->
+    <button class="login-btn" id="loginBtn">
+        <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.84 2.09-1.79 2.73v2.26h2.91c1.7-1.57 2.68-3.88 2.68-6.63z"/>
+            <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.91-2.26c-.8.54-1.83.86-3.05.86-2.34 0-4.33-1.58-5.04-3.71H.96v2.33C2.44 16.18 5.48 18 9 18z"/>
+            <path fill="#FBBC05" d="M3.96 10.71c-.18-.54-.28-1.11-.28-1.71s.1-1.17.28-1.71V4.96H.96C.35 6.18 0 7.55 0 9s.35 2.82.96 4.04l3-2.33z"/>
+            <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.44 1.82.96 4.96l3 2.33C4.67 5.16 6.66 3.58 9 3.58z"/>
+        </svg>
+        <span>Войти через Google</span>
+    </button>
+    
+    <!-- Инфо о пользователе -->
+    <div class="user-info" id="userInfo" style="display:none">
+        <img class="user-avatar" id="userAvatar" />
+        <span class="user-name" id="userName"></span>
+        <button class="logout-btn" id="logoutBtn" title="Выйти">⎋</button>
+    </div>
+    
+    <!-- Индикатор синхронизации -->
+    <div class="sync-indicator" id="syncIndicator" style="display:none" title="Синхронизировано с облаком">
+        ☁️
+    </div>
+</div>
+        </div>
+        
+        <div class="notebook">
+            <div class="coffee-stain"></div>
+            <div class="ink-blot"></div>
+            
+<div class="notebook-header">
+    <h1>
+        Мой Журнал
+        <span class="pencil-wrapper">
+            <!-- Контейнер для движения карандаша -->
+            <div class="writing-group">
+<svg class="pencil-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <!-- Ластик СВЕРХУ -->
+    <rect class="pencil-eraser" x="21" y="2" width="14" height="6" rx="2"/>
+    <!-- Металлическая часть -->
+    <rect class="pencil-metal" x="19" y="8" width="18" height="5" rx="1"/>
+    <!-- Тело карандаша -->
+    <rect class="pencil-body" x="20" y="13" width="16" height="40" rx="1"/>
+    <!-- Полоски -->
+    <rect class="pencil-stripe" x="20" y="13" width="16" height="3"/>
+    <rect class="pencil-stripe" x="20" y="49" width="16" height="3"/>
+    <!-- Острый кончик ВНИЗУ -->
+    <polygon class="pencil-tip" points="20,53 36,53 28,64"/>
+    <!-- Грифель в самом низу -->
+    <polygon class="pencil-lead" points="26,62 30,62 28,64"/>
+</svg>
+            </div>
+            <!-- Волна вынесена! Теперь она статична -->
+            <svg class="pencil-wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 85 10" preserveAspectRatio="none">
+                <path class="wave-path" 
+                      d="M 0 5 Q 4 2, 8 5 T 16 5 T 24 5 T 32 5 T 40 5 T 48 5 T 56 5 T 64 5 T 72 5 T 85 5" 
+                      fill="none" 
+                      stroke-linecap="round"/>
+            </svg>
+        </span>
+    </h1>
+    <p>Записи моей жизни...</p>
+</div>
+            
+            <div class="entries-container" id="entries"></div>
+            
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </main>
+</div>
+
+<button class="add-btn" id="addBtn" title="Новая запись">+</button>
+
+<!-- Модалка создания/редактирования -->
+<div class="modal" id="createModal">
+    <div class="modal-content">
+        <h2 id="modalTitle">Новая Запись</h2>
+        <div class="form-group">
+            <label>Заголовок</label>
+            <input type="text" id="entryTitle" placeholder="О чём запись?" />
+        </div>
+        <div class="form-group">
+            <label>Текст записи</label>
+            <textarea id="entryContent" placeholder="Пиши здесь..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Настроение</label>
+            <div class="mood-picker" id="moodPicker"></div>
+        </div>
+        <div class="form-group">
+            <label>Цвет чернил</label>
+            <div class="ink-colors" id="inkColors"></div>
+        </div>
+        <div class="form-group">
+            <label>Фото</label>
+            <div class="image-upload">
+                <label class="image-upload-btn" for="imageInput">
+                    📷 Выбрать фото (необязательно)
+                </label>
+                <input type="file" id="imageInput" accept="image/*" style="display:none" />
+                <img class="image-preview" id="imagePreview" />
+                <button class="remove-image" id="removeImage" type="button">✕ Удалить фото</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Теги (через запятую)</label>
+            <input type="text" id="entryTags" placeholder="мысли, день, идеи" />
+        </div>
+        <div class="modal-buttons">
+            <button class="btn btn-save" id="saveBtn">Сохранить</button>
+            <button class="btn btn-cancel" id="cancelBtn">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка просмотра -->
+<div class="modal" id="viewModal">
+    <div class="modal-content">
+        <div class="view-content" id="viewContent"></div>
+        <div class="modal-buttons">
+            <button class="btn btn-cancel" onclick="closeModal('viewModal')">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка удаления -->
+<div class="modal" id="deleteModal">
+    <div class="modal-content delete-modal">
+        <span class="icon">⚠️</span>
+        <h3>Удалить запись?</h3>
+        <p>Это действие нельзя отменить. Запись исчезнет из журнала навсегда.</p>
+        <div class="modal-buttons">
+            <button class="btn btn-delete-confirm" id="confirmDeleteBtn">Удалить</button>
+            <button class="btn btn-cancel" onclick="closeModal('deleteModal')">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка статистики -->
+<div class="modal" id="statsModal">
+    <div class="modal-content stats-modal">
+        <h2>📊 Статистика журнала</h2>
+        <div id="statsContent"></div>
+        <div class="modal-buttons">
+            <button class="btn btn-cancel" onclick="closeModal('statsModal')">Закрыть</button>
+        </div>
+    </div>
+</div>
+                    
+ <!-- Модалка "О проекте" -->
+<div class="modal about-modal" id="aboutModal">
+    <div class="modal-content">
+        <div class="about-header">
+            <h2>📖 Мой Журнал</h2>
+            <span class="about-version">v2.1.0</span>
+        </div>
+        <p class="about-description">
+            Личный дневник с красивым дизайном, облачной синхронизацией 
+            и умными функциями. Ваши мысли — в безопасности.
+        </p>
+        
+        <div class="about-section">
+            <h3>✨ Возможности</h3>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <span class="feature-icon">☁️</span>
+                    <span>Облачная синхронизация</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🔐</span>
+                    <span>Вход через Google</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">⭐</span>
+                    <span>Избранные записи</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📅</span>
+                    <span>Календарь</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🎨</span>
+                    <span>5 тем оформления</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">😊</span>
+                    <span>Настроение</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🏷️</span>
+                    <span>Теги</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📊</span>
+                    <span>Статистика</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📷</span>
+                    <span>Фото в записях</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🔍</span>
+                    <span>Умный поиск</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">✎</span>
+                    <span>8 цветов чернил</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">📄</span>
+                    <span>Пагинация</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="about-section">
+            <h3>📝 История версий</h3>
+            <div class="version-history">
+                <div class="version-item current">
+                    <div class="version-header">
+                        <span class="version-number">v2.1.0 — Текущая</span>
+                        <span class="version-date">18 июня 2026</span>
+                    </div>
+                    <div class="version-changes">
+                        <ul>
+                            <li>Добавлена тема "Тёплый вечер"</li>
+                            <li>Новый переключатель тем с dropdown</li>
+                            <li>Модалка "О проекте" с историей версий</li>
+                            <li>Улучшен UI — убраны лишние кнопки</li>
+                            <li>Анимация карандашика при наведении</li>  
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="version-item">
+                    <div class="version-header">
+                        <span class="version-number">v2.0.0</span>
+                        <span class="version-date">18 июня 2026</span>
+                    </div>
+                    <div class="version-changes">
+                        <ul>
+                            <li>⭐ Система избранного</li>
+                            <li>🌐 Firebase интеграция (облако + авторизация)</li>
+                            <li>🔄 Автосинхронизация между устройствами</li>
+                            <li>📱 Адаптивный дизайн</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="version-item">
+                    <div class="version-header">
+                        <span class="version-number">v1.5.0</span>
+                        <span class="version-date">18 июня 2026</span>
+                    </div>
+                    <div class="version-changes">
+                        <ul>
+                            <li>🎨 4 темы оформления</li>
+                            <li>📅 Интерактивный календарь</li>
+                            <li>📊 Статистика</li>
+                            <li>😊 Настроение записей</li>
+                            <li>🔍 Поиск и фильтры</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="version-item">
+                    <div class="version-header">
+                        <span class="version-number">v1.0.0 — Первый релиз</span>
+                        <span class="version-date">18 июня 2026</span>
+                    </div>
+                    <div class="version-changes">
+                        <ul>
+                            <li>📓 Базовая функциональность</li>
+                            <li>✍️ Создание и редактирование записей</li>
+                            <li>🏷️ Теги</li>
+                            <li>🎨 8 цветов чернил</li>
+                            <li>💾 Локальное хранение</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-buttons">
+            <button class="btn btn-cancel" onclick="closeModal('aboutModal')">Закрыть</button>
+        </div>
+    </div>
+</div>                   
+
+<!-- Модалка галереи -->
+<div class="modal gallery-modal" id="galleryModal">
+    <div class="modal-content">
+        <div class="gallery-header">
+            <h2>🖼️ Галерея воспоминаний</h2>
+            <button class="gallery-close-btn" onclick="closeModal('galleryModal')">×</button>
+        </div>
+        
+        <!-- Фильтры -->
+        <div class="gallery-filters">
+            <div class="gallery-filter-tags" id="galleryFilterTags">
+                <button class="filter-tag active" data-tag="all">Все фото</button>
+            </div>
+            <div class="gallery-filter-date">
+                <select id="galleryDateFilter">
+                    <option value="all">Все даты</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Сетка фото -->
+        <div class="gallery-grid" id="galleryGrid"></div>
+        
+        <!-- Пустое состояние -->
+        <div class="gallery-empty" id="galleryEmpty" style="display:none">
+            📸<br>
+            Пока нет фото в записях.<br>
+            <span>Добавь фото к записям, и они появятся здесь!</span>
+        </div>
+    </div>
+</div>
+
+<!-- Lightbox (полноэкранный просмотр) -->
+<div class="lightbox" id="lightbox">
+    <!-- Верхняя панель управления -->
+    <div class="lightbox-top-bar">
+        <div class="lightbox-top-left">
+            <button class="lightbox-control-btn" id="lightboxGoToEntry" title="К записи">📖</button>
+            <button class="lightbox-control-btn" id="lightboxSlideshow" title="Слайдшоу">▶</button>
+        </div>
+        <button class="lightbox-close" id="lightboxClose">×</button>
+    </div>
+    
+    <!-- Стрелки навигации -->
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev">‹</button>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext">›</button>
+    
+    <!-- Контент -->
+    <div class="lightbox-content">
+        <img id="lightboxImage" />
+        <div class="lightbox-info" id="lightboxInfo"></div>
+    </div>
+</div>              
+
+<!-- Модалка выхода -->
+<div class="modal logout-modal" id="logoutModal">
+    <div class="modal-content">
+        <h2>👋 Выход из аккаунта</h2>
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 10px;">
+            Что сделать с локальными записями?
+        </p>
+        
+        <div class="logout-options">
+            <div class="logout-option recommended" data-action="sync" id="logoutSync">
+                <div class="logout-option-icon">☁️</div>
+                <div class="logout-option-content">
+                    <div class="logout-option-title">Синхронизировать в облако</div>
+                    <div class="logout-option-desc">
+                        Все локальные записи будут загружены в облако. 
+                        При следующем входе они будут доступны.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="logout-option" data-action="keep" id="logoutKeep">
+                <div class="logout-option-icon">💾</div>
+                <div class="logout-option-content">
+                    <div class="logout-option-title">Оставить локально</div>
+                    <div class="logout-option-desc">
+                        Записи останутся в этом браузере. 
+                        При следующем входе будут объединены с облачными.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="logout-option" data-action="delete" id="logoutDelete">
+                <div class="logout-option-icon">🗑️</div>
+                <div class="logout-option-content">
+                    <div class="logout-option-title">Удалить локальные записи</div>
+                    <div class="logout-option-desc">
+                        Полная очистка. Начнёте с чистого листа при следующем входе.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="logout-warning">
+            <strong>⚠️ Важно:</strong> Если выберете "Удалить", локальные записи будут потеряны навсегда. 
+            Убедитесь что они синхронизированы с облаком или экспортированы.
+        </div>
+        
+        <div class="modal-buttons">
+            <button class="btn btn-save" id="confirmLogoutBtn">Выйти</button>
+            <button class="btn btn-cancel" onclick="closeModal('logoutModal')">Отмена</button>
+        </div>
+    </div>
+</div>                    
+                    
+                    
+<!-- Подключаем JS в правильном порядке -->
+<script src="js/storage.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/render.js"></script>
+<script src="js/modal.js"></script>
+<script src="js/app.js"></script>
+                    
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase.js"></script> 
+<!-- Переключатель тем -->
+<div class="theme-switcher">
+    <div class="theme-option active" data-theme="light" title="Тетрадь"></div>
+    <div class="theme-option" data-theme="parchment" title="Пергамент"></div>
+    <div class="theme-option" data-theme="minimal" title="Минимализм"></div>
+    <div class="theme-option" data-theme="neon" title="Неон"></div>
+</div>                    
+</body>
+</html>
