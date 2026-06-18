@@ -324,6 +324,30 @@ async function shareEntry(entry, options = {}) {
         
         showNotification('✅ Ссылка создана!', 'success');
         return { shareId, shareUrl };
+
+// Обновляем объект записи флагами шеринга
+const entryIndex = window.entries.findIndex(e => e.id === entry.id || e.date === entry.date);
+if (entryIndex !== -1) {
+    window.entries[entryIndex].shared = true;
+    window.entries[entryIndex].shareId = shareId;
+    window.entries[entryIndex].shareUrl = shareUrl;
+    
+    // Сохраняем локально
+    saveEntries(window.entries);
+    
+    // Обновляем в облаке (если есть ID записи)
+    if (window.isCloudMode && window.currentUser && window.entries[entryIndex].id) {
+        try {
+            await updateEntryInCloud(window.entries[entryIndex]);
+        } catch (err) {
+            console.warn('Не удалось обновить статус шеринга в облаке:', err);
+        }
+    }
+    
+    // Перерисовываем список записей
+    render();
+}
+      
     } catch (error) {
         console.error('Ошибка создания ссылки:', error);
         showNotification('❌ Не удалось создать ссылку', 'error');
