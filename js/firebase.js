@@ -286,3 +286,154 @@ async function updateEntryInCloud(entry) {
         return false;
     }
 }
+
+// ============ ПУБЛИЧНЫЕ ЗАПИСИ (SHARING) ============
+async function shareEntry(entry, options = {}) {
+    if (!window.currentUser) {
+        showNotification('❌ Для шаринга нужно войти в аккаунт', 'error');
+        return null;
+    }
+    
+    try {
+        const shareId = 'share_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        
+        // Подготавливаем публичные данные
+        const publicData = {
+            title: entry.title,
+            content: entry.content,
+            inkColor: entry.inkColor || INK_COLORS[0].color,
+            mood: entry.mood || '',
+            date: entry.date,
+            tags: entry.tags || [],
+            image: options.includeImage ? (entry.image || null) : null,
+            ownerUid: window.currentUser.uid,
+            ownerName: window.currentUser.displayName || 'Аноним',
+            ownerAvatar: window.currentUser.photoURL || '',
+            originalEntryId: entry.id || null,
+            createdAt: new Date().toISOString(),
+            viewCount: 0,
+            expiresAt: options.expiresAt || null // null = навсегда
+        };
+        
+        await db.collection('shared_entries')
+            .doc(shareId)
+            .set(publicData);
+        
+        // Генерируем ссылку
+        const shareUrl = `${window.location.origin}${window.location.pathname}?share=${shareId}`;
+        
+        showNotification('✅ Ссылка создана!', 'success');
+        return { shareId, shareUrl };
+    } catch (error) {
+        console.error('Ошибка создания ссылки:', error);
+        showNotification('❌ Не удалось создать ссылку', 'error');
+        return null;
+    }
+}
+
+async function loadSharedEntry(shareId) {
+    try {
+        const doc = await db.collection('shared_entries')
+            .doc(shareId)
+            .get();
+        
+        if (!doc.exists) {
+            return { error: 'Запись не найдена или была удалена' };
+        }
+        
+        const data = doc.data();
+        
+        // Проверяем срок действия
+        if (data.expiresAt && new Date(data.expiresAt) < new Date()) {
+            return { error: 'Срок действия ссылки истёк' };
+        }
+        
+        // Инкрементируем счётчик просмотров
+        try {
+            await db.collection('shared_entries')
+                .doc(shareId)
+                .update({ viewCount: (data.viewCount || 0) + 1 });
+        } catch (e) {
+            console.warn('Не удалось обновить счётчик:', e);
+        }
+        
+        return { ...data, shareId };
+    } catch (error) {
+        console.error('Ошибка загрузки публичной записи:', error);
+        return { error: 'Не удалось загрузить запись' };
+    }
+}
+
+async function revokeShare(shareId) {
+    if (!window.currentUser) return false;
+    
+    try {
+        const doc = await db.collection('shared_entries').doc(shareId).get();
+        
+        if (!doc.exists) return false;
+        
+        // Проверяем, что владелец — текущий пользователь
+        if (doc.data().ownerUid !== window.currentUser.uid) {
+            showNotification('❌ У вас нет прав на удаление этой ссылки', 'error');
+            return false;
+        }
+        
+        await db.collection('shared_entries').doc(shareId).delete();
+        showNotification('🗑️ Ссылка отозвана', 'success');
+        return true;
+    } catch (error) {
+        console.error('Ошибка отзыва ссылки:', error);
+        showNotification('❌ Не удалось отозвать ссылку', 'error');
+        return false;
+    }
+}
+
+async function getEntryShareStatus(entryId) {
+    if (!window.currentUser || !entryId) return null;
+    
+    try {
+        const snapshot = await db.collection('shared_entries')
+            .where('ownerUid', '==', window.currentUser.uid)
+            .where('originalEntryId', '==', entryId)
+            .limit(1)
+            .get();
+        
+        if (snapshot.empty) return null;
+        
+        const doc = snapshot.docs[0];
+        const data = doc.data();
+        
+        // Проверяем актуальность
+        if (data.expiresAt && new Date(data.expiresAt) < new Date()) {
+            return null;
+        }
+        
+        return { shareId: doc.id, ...data };
+    } catch (error) {
+        console.error('Ошибка проверки статуса:', error);
+        return null;
+    }
+}
+
+// Проверяем URL при загрузке страницы
+async function checkShareUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const shareId = params.get('share');
+    
+    if (!shareId) return;
+    
+    // Показываем индикатор загрузки
+    showNotification('⏳ Загрузка записи...', 'info');
+    
+    const result = await loadSharedEntry(shareId);
+    
+    if (result.error) {
+        setTimeout(() => {
+            showNotification('❌ ' + result.error, 'error');
+        }, 500);
+        return;
+    }
+    
+    // Открываем модалку публичного просмотра
+    setTimeout(() => openPublicViewModal(result), 300);
+}
