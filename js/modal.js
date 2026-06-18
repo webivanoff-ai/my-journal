@@ -154,6 +154,7 @@ function handleImageUpload(e) {
 
 // ============ ПРОСМОТР ЗАПИСИ ============
 function openViewModal(index) {
+    window.currentViewIndex = index;
     const entry = window.entries[index];
     const date = new Date(entry.date).toLocaleDateString('ru-RU', {
         year: 'numeric', month: 'long', day: 'numeric',
