@@ -21,6 +21,26 @@ document.addEventListener('DOMContentLoaded', () => {
     updateFavoritesCount();
     updateGalleryCount();
     renderCalendar();
+
+// ============ ШАРИНГ ============
+document.getElementById('shareBtn').addEventListener('click', () => {
+    if (window.currentViewIndex !== null && window.currentViewIndex !== undefined) {
+        openShareModal(window.currentViewIndex);
+    }
+});
+
+document.getElementById('editFromViewBtn').addEventListener('click', () => {
+    if (window.currentViewIndex !== null && window.currentViewIndex !== undefined) {
+        closeModal('viewModal');
+        setTimeout(() => openEditModal(window.currentViewIndex), 300);
+    }
+});
+
+// Инициализация обработчиков шаринга
+initShareHandlers();
+
+// Проверка URL на наличие публичной записи
+checkShareUrl();
     
     // ============ ОБРАБОТЧИКИ СОБЫТИЙ ============
     
