@@ -178,6 +178,43 @@ function openViewModal(index) {
     openModal('viewModal');
 }
 
+// ============ ШАРИНГ (ПОДЕЛИТЬСЯ) ============
+function openShareModal(index) {
+    const entry = window.entries[index];
+    
+    // Если у нас есть отдельная модалка шаринга — используем её
+    const shareModal = document.getElementById('shareModal');
+    if (shareModal) {
+        window.currentShareEntry = entry;
+        window.currentShareIndex = index;
+        
+        // Заполняем превью
+        const previewTitle = document.getElementById('sharePreviewTitle');
+        const previewDate = document.getElementById('sharePreviewDate');
+        
+        if (previewTitle) previewTitle.textContent = entry.title;
+        if (previewDate) {
+            const date = new Date(entry.date).toLocaleDateString('ru-RU', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+            previewDate.textContent = date;
+        }
+        
+        // Сбрасываем результат
+        const shareResult = document.getElementById('shareResult');
+        if (shareResult) shareResult.style.display = 'none';
+        
+        const createBtn = document.getElementById('createShareBtn');
+        if (createBtn) createBtn.style.display = 'inline-block';
+        
+        openModal('shareModal');
+        return;
+    }
+    
+    // Fallback: если модалки нет — просто копируем ссылку (заглушка)
+    showNotification('📤 Функция шаринга будет доступна после настройки Firebase', 'info');
+}
+
 // ============ УДАЛЕНИЕ ============
 function requestDelete(index) {
     window.deletingIndex = index;
