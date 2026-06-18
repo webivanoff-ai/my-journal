@@ -373,54 +373,6 @@ body {
     background: rgba(255, 255, 255, 0.05);
 }
 
-.entry-actions {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    gap: 8px;
-    z-index: 2;
-}
-
-.action-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
-    font-family: 'Kalam', cursive;
-    border: 2px solid;
-    background: transparent;
-}
-
-.edit-btn {
-    background: var(--edit-bg);
-    border-color: var(--edit-border);
-    color: var(--edit-color);
-}
-
-.edit-btn:hover {
-    background: var(--edit-color);
-    color: white;
-    transform: scale(1.1) rotate(-10deg);
-}
-
-.delete-btn {
-    background: var(--delete-bg);
-    border-color: var(--delete-border);
-    color: var(--delete-color);
-}
-
-.delete-btn:hover {
-    background: var(--delete-color);
-    color: white;
-    transform: scale(1.1);
-}
-
 .entry-date {
     font-family: 'Caveat', cursive;
     font-size: 22px;
@@ -1407,46 +1359,6 @@ body {
     box-shadow: 0 3px 10px rgba(255, 0, 110, 0.1);
 }
 
-/* ============ ИЗБРАННОЕ ============ */
-.favorite-btn {
-    position: absolute;
-    top: 10px;
-    right: 90px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: transparent;
-    border: 2px solid transparent;
-    cursor: pointer;
-    font-size: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
-    z-index: 2;
-    color: var(--text-secondary);
-    opacity: 0.6;
-}
-
-.favorite-btn:hover {
-    transform: scale(1.2) rotate(15deg);
-    opacity: 1;
-    border-color: #ffc107;
-    background: rgba(255, 193, 7, 0.1);
-}
-
-.favorite-btn.active {
-    opacity: 1;
-    color: #ffc107;
-    text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
-    animation: starPulse 0.6s ease;
-}
-
-@keyframes starPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.3) rotate(20deg); }
-}
-
 /* Индикатор избранного в заголовке */
 .favorite-indicator {
     display: inline-block;
@@ -1505,20 +1417,6 @@ body {
     color: #ff9800;
 }
 
-/* Адаптив для мобильной версии */
-@media (max-width: 600px) {
-    .favorite-btn {
-        right: 70px;
-        width: 32px;
-        height: 32px;
-        font-size: 18px;
-    }
-    
-    .favorites-filter {
-        font-size: 14px;
-        padding: 8px 12px;
-    }
-}
 
 /* ============ ТЕМА: ТЁПЛЫЙ ВЕЧЕР ============ */
 [data-theme="warm-evening"] {
@@ -3400,5 +3298,221 @@ body {
         flex-direction: column;
         gap: 15px;
         align-items: flex-start;
+    }
+}
+
+/* ============ НОВОЕ КОНТЕКСТНОЕ МЕНЮ ЗАПИСИ ============ */
+.entry-menu-wrapper {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.entry-menu-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--input-bg);
+    border: 2px solid var(--input-border);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    font-family: 'Kalam', cursive;
+    position: relative;
+    backdrop-filter: blur(5px);
+}
+
+.entry-menu-btn:hover {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px var(--shadow-color);
+}
+
+.entry-menu-btn .menu-dots {
+    transition: transform 0.3s;
+}
+
+.entry-dropdown.show ~ .entry-menu-btn .menu-dots {
+    transform: rotate(90deg);
+}
+
+/* Индикатор публикации */
+.shared-indicator {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    font-size: 14px;
+    background: var(--notebook-bg);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    animation: gentlePulse 2s infinite;
+}
+
+@keyframes gentlePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+/* ============ ВЫПАДАЮЩЕЕ МЕНЮ ============ */
+.entry-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--notebook-bg);
+    border: 2px solid var(--input-border);
+    border-radius: 12px;
+    padding: 8px;
+    min-width: 220px;
+    box-shadow: 0 10px 30px var(--shadow-color);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px) scale(0.95);
+    transform-origin: top right;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+.entry-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 11px 14px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Kalam', cursive;
+    font-size: 15px;
+    color: var(--text-primary);
+    text-align: left;
+    font-weight: 700;
+    transition: all 0.2s;
+}
+
+.dropdown-item:hover {
+    background: var(--input-bg);
+    transform: translateX(3px);
+}
+
+.dropdown-icon {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.dropdown-text {
+    flex: 1;
+}
+
+.dropdown-badge {
+    background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: var(--input-border);
+    margin: 5px 8px;
+    opacity: 0.5;
+}
+
+.dropdown-favorite.active {
+    color: #ffc107;
+}
+
+.dropdown-favorite.active .dropdown-icon {
+    animation: starPulse 0.6s ease;
+}
+
+@keyframes starPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3) rotate(20deg); }
+}
+
+.dropdown-shared {
+    background: rgba(76, 175, 80, 0.08);
+    color: #388e3c;
+    cursor: pointer;
+}
+
+[data-theme="dark"] .dropdown-shared {
+    color: #66bb6a;
+}
+
+.dropdown-shared:hover {
+    background: rgba(76, 175, 80, 0.15);
+}
+
+.dropdown-delete {
+    color: var(--delete-color);
+}
+
+.dropdown-delete:hover {
+    background: var(--delete-bg);
+    transform: translateX(3px);
+}
+
+/* Адаптив под разные темы */
+[data-theme="minimal"] .entry-dropdown {
+    border-radius: 8px;
+    box-shadow: 0 5px 20px var(--shadow-color);
+}
+
+[data-theme="minimal"] .dropdown-item {
+    border-radius: 6px;
+}
+
+[data-theme="warm-evening"] .entry-dropdown {
+    background: rgba(45, 36, 30, 0.98);
+}
+
+[data-theme="dark"] .entry-dropdown {
+    background: rgba(44, 36, 24, 0.98);
+}
+
+@media (max-width: 600px) {
+    .entry-menu-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 20px;
+    }
+    
+    .entry-dropdown {
+        min-width: 200px;
+    }
+    
+    .dropdown-item {
+        padding: 10px 12px;
+        font-size: 14px;
     }
 }
