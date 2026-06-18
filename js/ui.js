@@ -19,15 +19,6 @@ function loadTheme() {
     });
 }
 
-function loadTheme() {
-    const saved = localStorage.getItem('journalTheme') || 'light';
-    document.documentElement.setAttribute('data-theme', saved);
-    
-    // Обновляем UI
-    document.querySelectorAll('.theme-option').forEach(opt => {
-        opt.classList.toggle('active', opt.getAttribute('data-theme') === saved);
-    });
-}
 // ============ ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ============
 function escapeHtml(text) {
     if (!text) return '';
