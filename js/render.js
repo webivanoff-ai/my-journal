@@ -130,13 +130,18 @@ div.innerHTML = `
                 <span class="dropdown-icon">${entry.favorite ? '⭐' : '☆'}</span>
                 <span class="dropdown-text">${entry.favorite ? 'Убрать из избранного' : 'В избранное'}</span>
             </button>
-            ${entry.shared ? `
+                        ${entry.shared ? `
                 <div class="dropdown-item dropdown-shared" data-action="shared">
                     <span class="dropdown-icon">🔗</span>
                     <span class="dropdown-text">Опубликовано</span>
                     <span class="dropdown-badge">Ссылка активна</span>
                 </div>
-            ` : ''}
+            ` : `
+                <button class="dropdown-item dropdown-share" data-action="share">
+                    <span class="dropdown-icon">📤</span>
+                    <span class="dropdown-text">Поделиться</span>
+                </button>
+            `}
             <button class="dropdown-item dropdown-edit" data-action="edit">
                 <span class="dropdown-icon">✎</span>
                 <span class="dropdown-text">Редактировать</span>
@@ -167,12 +172,26 @@ const dropdown = div.querySelector('.entry-dropdown');
 menuBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     
-    // Закрываем все другие открытые меню
+    // Находим родительскую запись (entry)
+    const parentEntry = div.closest('.entry');
+    
+    // Закрываем все другие открытые меню и сбрасываем их z-index
     document.querySelectorAll('.entry-dropdown.show').forEach(d => {
-        if (d !== dropdown) d.classList.remove('show');
+        if (d !== dropdown) {
+            d.classList.remove('show');
+            // Сбрасываем z-index у соседних записей
+            const otherEntry = d.closest('.entry');
+            if (otherEntry) otherEntry.style.zIndex = '';
+        }
     });
     
+    const isOpening = !dropdown.classList.contains('show');
     dropdown.classList.toggle('show');
+    
+    // Повышаем z-index текущей записи, если меню открывается
+    if (parentEntry) {
+        parentEntry.style.zIndex = isOpening ? '10' : '';
+    }
 });
 
 // Обработчики действий в меню
@@ -195,7 +214,7 @@ dropdown.addEventListener('click', async (e) => {
             dropdown.classList.remove('show');
             requestDelete(realIndex);
             break;
-        case 'shared':
+                case 'shared':
             dropdown.classList.remove('show');
             if (entry.shareId && entry.shareUrl) {
                 try {
@@ -205,6 +224,10 @@ dropdown.addEventListener('click', async (e) => {
                     showNotification('🔗 Эта запись опубликована', 'info');
                 }
             }
+            break;
+        case 'share':
+            dropdown.classList.remove('show');
+            openShareModal(realIndex);
             break;
     }
 });
