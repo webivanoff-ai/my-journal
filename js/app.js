@@ -55,14 +55,21 @@ checkShareUrl();
         document.getElementById('menuDropdown').classList.toggle('show');
     });
     
-    // Закрытие dropdown меню при клике вне
-    document.addEventListener('click', (e) => {
-        const menuDropdown = document.getElementById('menuDropdown');
-        const menuBtn = document.getElementById('menuIconBtn');
-        if (menuDropdown && menuBtn && !menuDropdown.contains(e.target) && !menuBtn.contains(e.target)) {
-            menuDropdown.classList.remove('show');
-        }
-    });
+// Закрытие dropdown меню при клике вне
+document.addEventListener('click', (e) => {
+    const menuDropdown = document.getElementById('menuDropdown');
+    const menuBtn = document.getElementById('menuIconBtn');
+    if (menuDropdown && menuBtn && !menuDropdown.contains(e.target) && !menuBtn.contains(e.target)) {
+        menuDropdown.classList.remove('show');
+    }
+    
+    // ← НОВОЕ: Закрываем меню записей, если клик вне них
+    if (!e.target.closest('.entry-menu-wrapper')) {
+        document.querySelectorAll('.entry-dropdown.show').forEach(d => {
+            d.classList.remove('show');
+        });
+    }
+});
     
 // Фильтр избранного (из меню)
 document.getElementById('favoritesFilter').addEventListener('click', () => {
