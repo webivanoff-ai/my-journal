@@ -1382,17 +1382,6 @@ body {
 
 /* ============ ПЕРЕКЛЮЧАТЕЛЬ ТЕМ ============ */
 
-.theme-option[data-theme="neon"] {
-    background: linear-gradient(135deg, #ff006e 0%, #0a0a0f 100%);
-}
-
-@media (max-width: 600px) {
-    .theme-switcher {
-        bottom: 100px;
-        left: 20px;
-    }
-}
-
 /* ============ РАЗДЕЛЕНИЕ ЗАПИСЕЙ ============ */
 .entry {
     border-bottom: 3px solid var(--margin-color);
@@ -1618,55 +1607,49 @@ body {
 .theme-dropdown {
     position: absolute;
     top: 55px;
-    right: 0;
+    left: 50%;
+    transform: translate(-50%, -10px);
     background: var(--notebook-bg);
     border: 2px solid var(--input-border);
-    border-radius: 15px;
-    padding: 10px;
+    border-radius: 30px;
+    padding: 8px;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    gap: 10px;
     box-shadow: 0 10px 30px var(--shadow-color);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);
     transition: all 0.3s;
     z-index: 100;
-    min-width: 180px;
 }
 
 .theme-switcher-top:hover .theme-dropdown,
 .theme-dropdown.show {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translate(-50%, 0);
 }
 
 .theme-dropdown-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 10px;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
     cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'Kalam', cursive;
-    font-size: 15px;
-    color: var(--text-primary);
+    transition: transform 0.2s;
     border: none;
     background: transparent;
-    text-align: left;
 }
 
 .theme-dropdown-item:hover {
-    background: var(--input-bg);
-    transform: translateX(3px);
+    transform: scale(1.15);
 }
 
-.theme-dropdown-item.active {
-    background: var(--accent-color);
-    color: white;
-    font-weight: 700;
+.theme-dropdown-item.active .theme-preview {
+    box-shadow: 0 0 0 2px var(--notebook-bg), 0 0 0 4px var(--accent-color);
 }
 
 .theme-dropdown-item .theme-preview {
