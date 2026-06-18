@@ -214,6 +214,18 @@
 <div class="modal" id="viewModal">
     <div class="modal-content">
         <div class="view-content" id="viewContent"></div>
+
+<div class="view-actions">
+    <button class="share-btn" id="shareBtn" title="Поделиться">
+        <span class="share-icon">🔗</span>
+        <span class="share-text">Поделиться</span>
+    </button>
+    <button class="edit-from-view-btn" id="editFromViewBtn" title="Редактировать">
+        <span>✎</span>
+        <span>Редактировать</span>
+    </button>
+</div>
+        
         <div class="modal-buttons">
             <button class="btn btn-cancel" onclick="closeModal('viewModal')">Закрыть</button>
         </div>
@@ -492,7 +504,85 @@
         </div>
     </div>
 </div>                    
-                    
+
+<!-- ============ МОДАЛКА ШАРИНГА ============ -->
+<div id="shareModal" class="modal">
+    <div class="modal-content share-modal-content">
+        <h2>🔗 Поделиться записью</h2>
+        
+        <div class="share-preview">
+            <div class="share-preview-title" id="sharePreviewTitle"></div>
+            <div class="share-preview-date" id="sharePreviewDate"></div>
+        </div>
+        
+        <div class="share-options">
+            <div class="share-option">
+                <label class="share-option-label">⏱️ Срок действия ссылки</label>
+                <div class="share-duration-options">
+                    <button class="share-duration-btn active" data-days="1">1 день</button>
+                    <button class="share-duration-btn" data-days="7">7 дней</button>
+                    <button class="share-duration-btn" data-days="30">30 дней</button>
+                    <button class="share-duration-btn" data-days="0">Навсегда</button>
+                </div>
+            </div>
+            
+            <div class="share-option">
+                <label class="share-option-label">
+                    <input type="checkbox" id="shareIncludeImage" checked>
+                    <span>📸 Включить фото (если есть)</span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="share-result" id="shareResult" style="display:none;">
+            <div class="share-link-box">
+                <input type="text" id="shareLinkInput" readonly>
+                <button class="copy-link-btn" id="copyShareLinkBtn">📋 Копировать</button>
+            </div>
+            <div class="share-hint">
+                ✨ Любой с этой ссылкой сможет увидеть запись
+            </div>
+        </div>
+        
+        <div class="modal-buttons">
+            <button class="btn btn-save" id="createShareBtn">Создать ссылку</button>
+            <button class="btn btn-cancel" onclick="closeModal('shareModal')">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+
+    <!-- ============ МОДАЛКА ПУБЛИЧНОГО ПРОСМОТРА ============ -->
+<div id="publicViewModal" class="modal">
+    <div class="modal-content public-view-content">
+        <div class="public-view-header">
+            <div class="public-view-badge">🌐 Публичная запись</div>
+            <button class="public-view-close" onclick="closeModal('publicViewModal')">×</button>
+        </div>
+        
+        <div id="publicViewContent"></div>
+        
+        <div class="public-view-footer">
+            <div class="public-view-author">
+                <img id="publicAuthorAvatar" class="public-author-avatar" src="" alt="">
+                <div class="public-author-info">
+                    <div class="public-author-name" id="publicAuthorName"></div>
+                    <div class="public-author-date" id="publicShareDate"></div>
+                </div>
+            </div>
+            <div class="public-view-stats">
+                <span id="publicViewCount">👁️ 0</span>
+            </div>
+        </div>
+        
+        <div class="public-view-cta">
+            <p>Хотите свой личный дневник?</p>
+            <button class="btn btn-save" onclick="closeModal('publicViewModal'); document.getElementById('loginBtn').click();">
+                ✨ Создать свой журнал
+            </button>
+        </div>
+    </div>
+</div>
                     
 <!-- Подключаем JS в правильном порядке -->
 <script src="js/storage.js"></script>
