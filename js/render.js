@@ -159,27 +159,61 @@ div.innerHTML = `
     ` : ''}
 `;
             
-const editBtn = div.querySelector('.edit-btn');
-const deleteBtn = div.querySelector('.delete-btn');
-const favoriteBtn = div.querySelector('.favorite-btn');  // ← ДОБАВИЛИ
+// ============ ОБРАБОТЧИКИ НОВОГО МЕНЮ ============
+const menuBtn = div.querySelector('.entry-menu-btn');
+const dropdown = div.querySelector('.entry-dropdown');
 
-editBtn.addEventListener('click', (e) => {
+// Клик по иконке меню — toggle dropdown
+menuBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    openEditModal(realIndex);
+    
+    // Закрываем все другие открытые меню
+    document.querySelectorAll('.entry-dropdown.show').forEach(d => {
+        if (d !== dropdown) d.classList.remove('show');
+    });
+    
+    dropdown.classList.toggle('show');
 });
 
-deleteBtn.addEventListener('click', (e) => {
+// Обработчики действий в меню
+dropdown.addEventListener('click', async (e) => {
+    const item = e.target.closest('.dropdown-item');
+    if (!item) return;
+    
     e.stopPropagation();
-    requestDelete(realIndex);
+    const action = item.getAttribute('data-action');
+    
+    switch (action) {
+        case 'favorite':
+            await toggleFavorite(realIndex);
+            break;
+        case 'edit':
+            dropdown.classList.remove('show');
+            openEditModal(realIndex);
+            break;
+        case 'delete':
+            dropdown.classList.remove('show');
+            requestDelete(realIndex);
+            break;
+        case 'shared':
+            dropdown.classList.remove('show');
+            if (entry.shareId && entry.shareUrl) {
+                try {
+                    await navigator.clipboard.writeText(entry.shareUrl);
+                    showNotification('🔗 Ссылка скопирована!', 'success');
+                } catch (err) {
+                    showNotification('🔗 Эта запись опубликована', 'info');
+                }
+            }
+            break;
+    }
 });
 
-// ↓ ЭТОТ БЛОК ДОБАВИЛИ ↓
-favoriteBtn.addEventListener('click', async (e) => {
-    e.stopPropagation();
-    await toggleFavorite(realIndex);
+// Клик по самой записи (вне меню) — открываем просмотр
+div.addEventListener('click', (e) => {
+    if (e.target.closest('.entry-menu-wrapper')) return;
+    openViewModal(realIndex);
 });
-
-div.addEventListener('click', () => openViewModal(realIndex));
             
             entriesContainer.appendChild(div);
         });
