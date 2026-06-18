@@ -201,3 +201,128 @@ updateFavoritesCount();  // ← ДОБАВИЛИ
 updateGalleryCount();        
     }
 }
+
+// ============ ШАРИНГ ЗАПИСЕЙ ============
+let currentShareEntry = null;
+let selectedShareDays = 1;
+
+function openShareModal(index) {
+    currentShareEntry = window.entries[index];
+    
+    // Заполняем превью
+    document.getElementById('sharePreviewTitle').textContent = currentShareEntry.title;
+    const date = new Date(currentShareEntry.date).toLocaleDateString('ru-RU', {
+        year: 'numeric', month: 'long', day: 'numeric'
+    });
+    document.getElementById('sharePreviewDate').textContent = date;
+    
+    // Сбрасываем состояние
+    document.getElementById('shareResult').style.display = 'none';
+    document.getElementById('createShareBtn').style.display = 'inline-block';
+    document.getElementById('shareIncludeImage').checked = true;
+    
+    // Сбрасываем выбор срока
+    document.querySelectorAll('.share-duration-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-days') === '1');
+    });
+    selectedShareDays = 1;
+    
+    openModal('shareModal');
+}
+
+// Обработчики для кнопок срока
+function initShareHandlers() {
+    document.querySelectorAll('.share-duration-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.share-duration-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedShareDays = parseInt(btn.getAttribute('data-days'));
+        });
+    });
+    
+    document.getElementById('createShareBtn').addEventListener('click', async () => {
+        const includeImage = document.getElementById('shareIncludeImage').checked;
+        
+        let expiresAt = null;
+        if (selectedShareDays > 0) {
+            const date = new Date();
+            date.setDate(date.getDate() + selectedShareDays);
+            expiresAt = date.toISOString();
+        }
+        
+        const result = await shareEntry(currentShareEntry, { includeImage, expiresAt });
+        
+        if (result) {
+            document.getElementById('shareLinkInput').value = result.shareUrl;
+            document.getElementById('shareResult').style.display = 'block';
+            document.getElementById('createShareBtn').style.display = 'none';
+            
+            // Обновляем кнопку "Поделиться" в viewModal
+            const shareBtn = document.getElementById('shareBtn');
+            if (shareBtn) shareBtn.classList.add('shared');
+        }
+    });
+    
+    document.getElementById('copyShareLinkBtn').addEventListener('click', async () => {
+        const input = document.getElementById('shareLinkInput');
+        const btn = document.getElementById('copyShareLinkBtn');
+        
+        try {
+            await navigator.clipboard.writeText(input.value);
+            btn.textContent = '✅ Скопировано!';
+            btn.classList.add('copied');
+            
+            setTimeout(() => {
+                btn.textContent = '📋 Копировать';
+                btn.classList.remove('copied');
+            }, 2000);
+        } catch (err) {
+            // Fallback для старых браузеров
+            input.select();
+            document.execCommand('copy');
+            btn.textContent = '✅ Скопировано!';
+            setTimeout(() => btn.textContent = '📋 Копировать', 2000);
+        }
+    });
+}
+
+// ============ ПУБЛИЧНЫЙ ПРОСМОТР ============
+function openPublicViewModal(data) {
+    const content = document.getElementById('publicViewContent');
+    const date = new Date(data.date).toLocaleDateString('ru-RU', {
+        year: 'numeric', month: 'long', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+    });
+    
+    content.innerHTML = `
+        <div class="view-date">${data.mood || ''} ${date}</div>
+        <h2 class="view-title" style="color: ${data.inkColor}">${escapeHtml(data.title)}</h2>
+        ${data.image ? `<img class="view-image" src="${data.image}" alt="Фото">` : ''}
+        <div class="view-text" style="color: ${data.inkColor}">${escapeHtml(data.content)}</div>
+        ${(data.tags || []).length > 0 ? `
+            <div class="view-tags">
+                ${data.tags.map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join('')}
+            </div>
+        ` : ''}
+    `;
+    
+    // Автор
+    const avatar = document.getElementById('publicAuthorAvatar');
+    avatar.src = data.ownerAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.ownerName || 'User')}`;
+    document.getElementById('publicAuthorName').textContent = data.ownerName || 'Аноним';
+    
+    const shareDate = new Date(data.createdAt).toLocaleDateString('ru-RU', {
+        year: 'numeric', month: 'long', day: 'numeric'
+    });
+    document.getElementById('publicShareDate').textContent = 'Опубликовано: ' + shareDate;
+    
+    // Счётчик просмотров
+    document.getElementById('publicViewCount').textContent = '👁️ ' + (data.viewCount || 0) + ' просмотров';
+    
+    openModal('publicViewModal');
+    
+    // Убираем параметр из URL, чтобы не открывалось снова при рефреше
+    const url = new URL(window.location);
+    url.searchParams.delete('share');
+    window.history.replaceState({}, '', url);
+}
