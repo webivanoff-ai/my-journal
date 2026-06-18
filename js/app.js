@@ -220,14 +220,19 @@ document.getElementById('favoritesIndicatorClose').addEventListener('click', () 
         }
         
         // Иначе — закрытие модалок и dropdown
-        if (e.key === 'Escape') {
-            document.querySelectorAll('.modal.active').forEach(m => closeModal(m.id));
-            
-            const themeDropdown = document.getElementById('themeDropdown');
-            if (themeDropdown) themeDropdown.classList.remove('show');
-            
-            const menuDropdown = document.getElementById('menuDropdown');
-            if (menuDropdown) menuDropdown.classList.remove('show');
-        }
+if (e.key === 'Escape') {
+    document.querySelectorAll('.modal.active').forEach(m => closeModal(m.id));
+    
+    const themeDropdown = document.getElementById('themeDropdown');
+    if (themeDropdown) themeDropdown.classList.remove('show');
+    
+    const menuDropdown = document.getElementById('menuDropdown');
+    if (menuDropdown) menuDropdown.classList.remove('show');
+    
+    // ← НОВОЕ: Закрываем все открытые меню записей
+    document.querySelectorAll('.entry-dropdown.show').forEach(d => {
+        d.classList.remove('show');
+    });
+}
     });
 });
