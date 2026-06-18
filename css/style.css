@@ -3516,3 +3516,28 @@ body {
         font-size: 14px;
     }
 }
+
+/* ============ Z-INDEX FIX: меню поверх соседних записей ============ */
+.entry {
+    position: relative;
+    z-index: 1;
+    transition: z-index 0s;
+}
+
+.entry:has(.entry-dropdown.show) {
+    z-index: 10;
+}
+
+/* Пункт "Поделиться" */
+.dropdown-share {
+    color: var(--accent-color);
+}
+
+.dropdown-share:hover {
+    background: rgba(139, 69, 19, 0.08);
+    transform: translateX(3px);
+}
+
+[data-theme="dark"] .dropdown-share:hover {
+    background: rgba(212, 165, 116, 0.1);
+}
