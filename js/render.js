@@ -120,21 +120,44 @@ if (filtered.length === 0) {
             const mood = entry.mood || '';
             
 div.innerHTML = `
-    <div class="entry-actions">
-        <button class="action-btn edit-btn" title="Редактировать">✎</button>
-        <button class="favorite-btn ${entry.favorite ? 'active' : ''}" title="В избранное">${entry.favorite ? '⭐' : '☆'}</button>
-        <button class="action-btn delete-btn" title="Удалить">×</button>
+    <div class="entry-menu-wrapper">
+        <button class="entry-menu-btn" title="Действия">
+            <span class="menu-dots">⋮</span>
+            ${entry.shared ? '<span class="shared-indicator" title="Опубликовано">🔗</span>' : ''}
+        </button>
+        <div class="entry-dropdown">
+            <button class="dropdown-item dropdown-favorite ${entry.favorite ? 'active' : ''}" data-action="favorite">
+                <span class="dropdown-icon">${entry.favorite ? '⭐' : '☆'}</span>
+                <span class="dropdown-text">${entry.favorite ? 'Убрать из избранного' : 'В избранное'}</span>
+            </button>
+            ${entry.shared ? `
+                <div class="dropdown-item dropdown-shared" data-action="shared">
+                    <span class="dropdown-icon">🔗</span>
+                    <span class="dropdown-text">Опубликовано</span>
+                    <span class="dropdown-badge">Ссылка активна</span>
+                </div>
+            ` : ''}
+            <button class="dropdown-item dropdown-edit" data-action="edit">
+                <span class="dropdown-icon">✎</span>
+                <span class="dropdown-text">Редактировать</span>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item dropdown-delete danger" data-action="delete">
+                <span class="dropdown-icon">🗑</span>
+                <span class="dropdown-text">Удалить</span>
+            </button>
+        </div>
     </div>
-                <div class="entry-date">${mood} ${date}</div>
-                <div class="entry-title" style="color: ${inkColor}">${escapeHtml(entry.title)}</div>
-                ${entry.image ? `<img class="entry-image-preview" src="${entry.image}" />` : ''}
-                <div class="entry-preview" style="color: ${inkColor}">${truncate(entry.content)}</div>
-                ${(entry.tags || []).length > 0 ? `
-                    <div class="entry-tags">
-                        ${entry.tags.map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join('')}
-                    </div>
-                ` : ''}
-            `;
+    <div class="entry-date">${mood} ${date}</div>
+    <div class="entry-title" style="color: ${inkColor}">${escapeHtml(entry.title)}</div>
+    ${entry.image ? `<img class="entry-image-preview" src="${entry.image}" />` : ''}
+    <div class="entry-preview" style="color: ${inkColor}">${truncate(entry.content)}</div>
+    ${(entry.tags || []).length > 0 ? `
+        <div class="entry-tags">
+            ${entry.tags.map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join('')}
+        </div>
+    ` : ''}
+`;
             
 const editBtn = div.querySelector('.edit-btn');
 const deleteBtn = div.querySelector('.delete-btn');
